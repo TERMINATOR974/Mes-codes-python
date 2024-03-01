@@ -33,8 +33,12 @@ player_y = SCREEN_HEIGHT - 2 * PLAYER_HEIGHT
 
 # Vitesse du joueur
 player_speed = 5
-jump_count = 10
+jump_count = 7  # Réduire le nombre de sauts
 is_jumping = False
+
+# Déplacement horizontal du joueur
+move_left = False
+move_right = False
 
 # Plateformes
 platforms_level1 = [
@@ -54,7 +58,6 @@ platforms_level2 = [
     pygame.Rect(350, 50, PLATFORM_WIDTH, PLATFORM_HEIGHT),
     pygame.Rect(200, 200, PLATFORM_WIDTH, PLATFORM_HEIGHT),
     pygame.Rect(550, 350, PLATFORM_WIDTH, PLATFORM_HEIGHT),
-    pygame.Rect(100, 500, PLATFORM_WIDTH, PLATFORM_HEIGHT),
     pygame.Rect(650, 650, PLATFORM_WIDTH, PLATFORM_HEIGHT),
     pygame.Rect(250, 800, PLATFORM_WIDTH, PLATFORM_HEIGHT),
     pygame.Rect(600, 950, PLATFORM_WIDTH, PLATFORM_HEIGHT),
@@ -74,22 +77,31 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
-    # Récupérer les touches pressées
-    keys = pygame.key.get_pressed()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                move_left = True
+            elif event.key == pygame.K_RIGHT:
+                move_right = True
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                move_left = False
+            elif event.key == pygame.K_RIGHT:
+                move_right = False
 
     # Déplacer le joueur en fonction des touches pressées
-    if keys[pygame.K_LEFT] and player_x > 0:
+    if move_left and player_x > 0:
         player_x -= player_speed
-    if keys[pygame.K_RIGHT] and player_x < SCREEN_WIDTH - PLAYER_WIDTH:
+    if move_right and player_x < SCREEN_WIDTH - PLAYER_WIDTH:
         player_x += player_speed
 
     # Gestion du saut
     if not is_jumping:
+        keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             is_jumping = True
+            jump_count = 7  # Réinitialiser le nombre de sauts
     else:
-        if jump_count >= -10:
+        if jump_count >= -7:  # Réduire la hauteur du saut
             neg = 1
             if jump_count < 0:
                 neg = -1
@@ -97,7 +109,6 @@ while True:
             jump_count -= 1
         else:
             is_jumping = False
-            jump_count = 10
 
     # Appliquer la gravité uniquement si le joueur n'est pas sur une plateforme
     on_ground = False
@@ -178,3 +189,4 @@ while True:
 
     # Contrôler la fréquence de rafraîchissement
     pygame.time.Clock().tick(30)
+
